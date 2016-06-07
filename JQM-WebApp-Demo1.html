@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+	<title>列出时刻表</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.4.5.css">
+</head>
+<body>
+<div data-role="page" id="index1">
+	<div data-role="header" data-positon="fixed">
+		<h1>title</h1>
+	</div>
+	<div role="main" class="ui-content">
+		<ul data-role="listview" data-inset="true">
+			<li><a href="#">1</a></li>
+			<li><a href="#">1</a></li>
+			<li><a href="#">1</a></li>
+			<li><a href="#">1</a></li>
+			<li><a href="#">1</a></li>
+			<li>
+				<a href="">
+					<h2>G1</h2>
+					<p>beijing</p>
+					<p>4:50</p>
+					<p class="ui-li-aside">9:00</p>
+				</a>
+			</li>
+		</ul>
+		<form>
+		   <div class="ui-field-contain">
+		    <label>发车</label>
+			<input type="text" name="">
+		   </div>
+		   <div class="ui-field-contain">
+			 <label>发车</label>
+			 <input type="text" name="">
+		   </div>
+		</form>
+		<table data-role="table" data-mode="reflow" class="ui-resonsive table-stroke">
+			<thead>
+				<tr>
+					<th>一</th>
+					<th>二</th>
+					<th>三</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>123</td>
+					<td>123</td>
+					<td>123</td>
+				</tr>
+				<tr>
+					<td>123</td>
+					<td>123</td>
+					<td>123</td>
+				</tr>
+				<tr>
+					<td>123</td>
+					<td>123</td>
+					<td>123</td>
+				</tr>
+			</tbody>
+		</table>
+		<a href="#" id="ajaxbtn" class="ui-btn">加载</a>
+	</div>
+	<div data-role="footer" data-position="fixed">
+		<div data-role="navbar">
+			<ul>
+				<li><a data-icon="camera">1</a></li>
+				<li><a data-icon="carat-l">2</a></li>
+				<li><a data-icon="carat-r">3</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<div data-role="page" id="index2">
+	<div data-role="header">
+		<h1>title</h1>
+	</div>
+	<div role="main">
+		<p>main1</p>
+		<p><a href="#index1" data-transition="slide">index1</a></p>
+		<a href="" class="ui-btn ui-btn-inline">button1</a>
+		<a href="" class="ui-btn ui-btn-inline">button2</a>
+		<input type="submit" name="" value="button" class="ui-btn-inline">
+	</div>
+	<div data-role="footer">
+		<h1>footer</h1>
+	</div>
+</div>
+<script src="js/jquery.js"></script>
+<script src="js/jquery.mobile-1.4.5.js"></script>
+<script type="text/javascript">
+	var urlPre = "http://www.corsproxy.com";//跨域中转
+	var url1 = "";
+	var url2 = "";
+	var url3 = "";
+    //获取车次
+    var getTrainList = function(){
+        if ($("#search-no").val() || ($("#search-begin").val() && $("#search-end").val()) ) {
+           var searchButton = $(this);
+           searchButton.button("option","disabled",true);
+
+           $.mobile.loading("show");
+
+           var data = {};
+           var _url = url1;
+           if (!$("#search-no").val()) {
+              _data.StartStation = $("#search-begin").val();
+              _data.ArriveStation = $("#search-end").val();
+           }else{
+           	 _data.TrainCode = $("#search-no").val();
+           	 _url = url2;
+           }
+
+           $.get(urlPre + _url,_data,function(data){
+               var list = $("#list");
+               var timeTables = $(data).find("timeTable");
+
+               var _arr = [];
+               timeTables.each(function(index,obj){
+                   var i = index;
+                   if (i>10) return false;
+
+                   var that = $(this);
+                   if(that.find("FirstStatioin").text() == "error"){
+                      alert("");
+                      return false;
+                   };
+                    
+                    var _html = '<li><a href="#" data-no="'+ that.find("TrainCode").text() + '">'+
+                    '<h2>' + that.find("TrainCode").text() + '</h2>' +
+                    '<p>' + that.find("FirstStatioin").text() + '-' + that.find("LastStation").text + '</p>'+
+                    '<p>用时:' + that.find("UseDate").text() + '</p>' +
+                    '<p class="ui-li-aside">' + that.find("StartTime").text() + '开</p>' +
+                    '</a></li>';
+
+                   _arr.push();
+
+                   if (_arr.lenght > 0) {
+                   	list.html(_arr.join(""));
+                   }
+
+                   $.mobile.loading("hide");
+                   
+               });
+           });
+
+        } else {
+        	alert()
+        }
+        //校验数据
+    };
+    
+    var getInfoByTrainCode = function(){
+
+    };
+
+    var bindEvent = function(){
+        $("#search-submit").on("click",getTrainList);
+        $("#list").on("click","a",getInfoByTrainCode);
+    };
+
+	$(document).on("pageinit","#index",function(){
+        bindEvent();
+	});//pageinit 事件在页面初始化后及 jQuery Mobile 已完成对页面内容的增强后触发。
+</script>
+</body>
+</html>
